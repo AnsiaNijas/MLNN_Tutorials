@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>sentiment_analysis_glove_bilstm_imdb (2) (2)</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>sentiment_analysis_glove_bilstm_imdb</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -8498,18 +8498,22 @@ Test Accuracy: 0.8088
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5eebde13">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8MGnOSj5L89v">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Load-and-Use-the-Model"><strong>Load and Use the Model</strong><a class="anchor-link" href="#Load-and-Use-the-Model">¶</a></h2><p>Let’s load the saved model and use it to predict sentiment for new text data. First, we load the model from the saved file. Then, we process the new input text by tokenizing and padding it, just like we did during training. Finally, we pass the prepared data to the model for prediction, where the output indicates the sentiment: closer to 1 for positive and closer to 0 for negative.</p>
-<p>This step shows how to apply the trained model to real-world scenarios!</p>
+<h2 id="Load-and-Use-the-Model"><strong>Load and Use the Model</strong><a class="anchor-link" href="#Load-and-Use-the-Model">¶</a></h2><p>Let’s load the saved model and use it to predict sentiment for user-provided reviews interactively. First, we load the model from the saved file. The program prompts the user to enter a review, which is then processed by tokenizing and padding, just like during training. The prepared input is passed to the model for prediction, where the output score indicates the sentiment:</p>
+<ul>
+<li><strong>Closer to 1:</strong> Positive review.</li>
+<li><strong>Closer to 0:</strong> Negative review.</li>
+</ul>
+<p>For each prediction, the program displays the score along with a fun comments. This interactive approach demonstrates how to apply the trained model in real-world scenarios while engaging users with meaningful feedback.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d9bd0886">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=OQuzCDeTL89w">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8517,15 +8521,38 @@ Test Accuracy: 0.8088
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1"># Load the model</span>
+<div class="highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.sequence</span> <span class="kn">import</span> <span class="n">pad_sequences</span>
+
+<span class="c1"># Load the model</span>
 <span class="n">loaded_model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s1">'sentiment_analysis_glove_bilstm.h5'</span><span class="p">)</span>
 
-<span class="c1"># Predict on new data</span>
-<span class="n">sample_text</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"The movie was fantastic! I really enjoyed it."</span><span class="p">]</span>
-<span class="n">sample_seq</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">(</span><span class="n">sample_text</span><span class="p">)</span>
-<span class="n">sample_padded</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">(</span><span class="n">sample_seq</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_type</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="n">trunc_type</span><span class="p">)</span>
-<span class="n">prediction</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">sample_padded</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Prediction: </span><span class="si">{</span><span class="n">prediction</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="c1"># Interactive sentiment analysis</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Welcome to the Sentiment Analysis Tool!"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Type your review below to analyze its sentiment."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"To exit, type 'exit'."</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># Get user input</span>
+    <span class="n">user_review</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Enter your movie review: "</span><span class="p">)</span>
+
+    <span class="c1"># Exit condition</span>
+    <span class="k">if</span> <span class="n">user_review</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"exit"</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Thank you for using the Sentiment Analysis Tool. Goodbye!"</span><span class="p">)</span>
+        <span class="k">break</span>
+
+    <span class="c1"># Process the input review</span>
+    <span class="n">sample_seq</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">([</span><span class="n">user_review</span><span class="p">])</span>
+    <span class="n">sample_padded</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">(</span><span class="n">sample_seq</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_type</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="n">trunc_type</span><span class="p">)</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">sample_padded</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Print the result with fun comment</span>
+    <span class="k">if</span> <span class="n">prediction</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Prediction: </span><span class="si">{</span><span class="n">prediction</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Ha ha, it's a positive review! 😊"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Prediction: </span><span class="si">{</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">prediction</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Oops, it's a negative review! 😟"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8545,8 +8572,17 @@ Test Accuracy: 0.8088
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-bold">1/1</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 649ms/step
-Prediction: 0.9866
+<pre>Welcome to the Sentiment Analysis Tool!
+Type your review below to analyze its sentiment.
+To exit, type 'exit'.
+
+Enter your movie review: The movie was absolutely amazing! The storyline was captivating, and the acting was top-notch. I loved every moment of it.
+<span class="ansi-bold">1/1</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 562ms/step
+Prediction: 0.9918
+Ha ha, it's a positive review! 😊
+
+Enter your movie review: exit
+Thank you for using the Sentiment Analysis Tool. Goodbye!
 </pre>
 </div>
 </div>
@@ -8571,7 +8607,7 @@ Prediction: 0.9866
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="GitHub-Repository">GitHub Repository<a class="anchor-link" href="#GitHub-Repository">¶</a></h2><p>You can find the source code and updates for this project on GitHub:
+<h2 id="GitHub-Repository">GitHub Repository<a class="anchor-link" href="#GitHub-Repository">¶</a></h2><p>You can find the source code and updates for this tutorial on GitHub:
 <a href="https://github.com/AnsiaNijas/MLNN_Tutorials">MLNN GitHub Repository</a></p>
 <p>You can execute the code in Google Colab using the following link: <a href="https://colab.research.google.com/github/AnsiaNijas/MLNN_Tutorials/blob/main/sentiment_analysis_glove_bilstm_imdb.ipynb">Sentiment Analysis using GloVe and BiLSTM on IMDb Dataset</a>.</p>
 </div>
@@ -8584,13 +8620,26 @@ Prediction: 0.9866
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="References">References<a class="anchor-link" href="#References">¶</a></h2><p>This project utilizes the following libraries and tools:</p>
-<ul>
+<h2 id="References">References<a class="anchor-link" href="#References">¶</a></h2><ul>
 <li>Aburass, S., Dorgham, O., &amp; Al Shaqsi, J., 2023. A Hybrid Machine Learning Model for Classifying Gene Mutations in Cancer Using LSTM, BiLSTM, CNN, GRU, and GloVe. arXiv. Available at: <a href="https://arxiv.org/abs/2307.14361">https://arxiv.org/abs/2307.14361</a> [Accessed 12 Dec. 2024].</li>
 <li>Keras, 2023. Available at: <a href="https://keras.io/">https://keras.io/</a> [Accessed 5 Dec. 2024].</li>
 <li>TensorFlow, 2023. Available at: <a href="https://www.tensorflow.org/">https://www.tensorflow.org/</a> [Accessed 2 Dec. 2024].</li>
 <li>Wu, J., Ren, P., Song, B., Zhang, R., Zhao, C., &amp; Zhang, X., 2023. Data Glove-Based Gesture Recognition Using CNN-BiLSTM Model with Attention Mechanism. PLOS ONE. Available at: <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0294174">https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0294174</a> [Accessed 12 Dec. 2024].</li>
 </ul>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=mBVOVB4n-Y8V">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<div style="text-align: center; font-size: 0.9em; color: grey; margin-top: 20px;">
+    This tutorial is licensed under the <a href="https://github.com/AnsiaNijas/MLNN_Tutorials/blob/main/LICENSE" target="_blank">MIT License</a>.
+</div>
 </div>
 </div>
 </div>
